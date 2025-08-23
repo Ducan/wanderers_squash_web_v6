@@ -12,9 +12,12 @@ from app.dbconnection import (
     get_booked_players_memno,
     get_period_ids_by_date_range,
     get_booking_cell,
+    get_time_slots,
+    DEFAULT_TIMEZONE,
    )
 from app.flask_waitinglist_app import process_waiting_list_notifications
 from datetime import datetime, timedelta
+import pytz
 import pandas as pd
 
 # Define the blueprint for bookings
@@ -386,24 +389,41 @@ def add_booking():
         # Step 1: Parse incoming data
         data = request.json
         player_no = data.get("player_no")
-        date_container = data.get("date_container")  # Expected to be in "YYYY-MM-DD" format
-        selected_time = data.get("selected_time")  # Expected to be in "HH:MM" format
+        date_container = data.get("date_container")  # Expected "YYYY-MM-DD"
+        slot_id = data.get("slot_id")
         selected_court = data.get("selected_court")
 
-        if not (player_no and date_container and selected_time and selected_court):
+        if not (player_no and date_container and slot_id and selected_court):
             return jsonify({"error": "Missing required booking details."}), 400
 
-        # Convert date to "dd/MM/yyyy"
         try:
-            date_container = datetime.strptime(date_container, "%Y-%m-%d").strftime("%d/%m/%Y")
+            booking_date = datetime.strptime(date_container, "%Y-%m-%d")
         except ValueError:
             return jsonify({"error": "Invalid date format. Expected 'YYYY-MM-DD'."}), 400
 
-        # Combine date and time
-        booking_time_str = f"{date_container} {selected_time}:00"
-        booking_time = datetime.strptime(booking_time_str, "%d/%m/%Y %H:%M:%S")
-        if booking_time < datetime.now():
+        # Determine day of week for time slot retrieval (1=Sunday,...,7=Saturday)
+        py_day = booking_date.weekday()  # 0=Mon
+        day_of_week = py_day + 2
+        if day_of_week == 8:
+            day_of_week = 1
+
+        time_slots = get_time_slots(day_of_week)
+        try:
+            slot_index = int(slot_id) - 1
+            selected_time = time_slots[slot_index]
+        except (ValueError, IndexError):
+            return jsonify({"error": "Invalid slot ID."}), 400
+
+        local_tz = pytz.timezone(DEFAULT_TIMEZONE)
+        booking_time = local_tz.localize(
+            datetime.strptime(f"{date_container} {selected_time}", "%Y-%m-%d %H:%M")
+        )
+        end_time = booking_time + timedelta(minutes=45)
+        if booking_time < datetime.now(local_tz):
             return jsonify({"error": "Bookings cannot be made for past time slots."}), 403
+
+        date_container_formatted = booking_date.strftime("%d/%m/%Y")
+        booking_time_str = f"{date_container_formatted} {selected_time}:00"
 
         # Step 2: Validate Lights Credit
         user_profile = get_squash_members_profile(username=player_no)
@@ -421,7 +441,7 @@ def add_booking():
             return jsonify({"status": "already_booked", "message": "Slot already booked."}), 409
 
         result = update_internet_bookings(
-            date_container=date_container,
+            date_container=date_container_formatted,
             mem_no=player_no,
             selected_court={"player_no_column": player_no_column},
             selected_time=selected_time
@@ -516,13 +536,36 @@ def delete_booking():
     try:
         # Step 1: Retrieve data from the request
         data = request.json
-        start_time1 = data.get("start_time1")  # e.g., "10/12/2024 05:30:00"
+        date_container = data.get("date_container")  # "YYYY-MM-DD"
+        slot_id = data.get("slot_id")
         player_no_column = data.get("player_no_column")  # e.g., "PlayerNo_1"
         player_no = data.get("player_no")  # Member number
         selected_court = data.get("selected_court")  # Court ID or number
 
-        if not (start_time1 and player_no_column and player_no and selected_court):
+        if not (date_container and slot_id and player_no_column and player_no and selected_court):
             return jsonify({"error": "Missing booking details."}), 400
+
+        try:
+            booking_date = datetime.strptime(date_container, "%Y-%m-%d")
+        except ValueError:
+            return jsonify({"error": "Invalid date format. Expected 'YYYY-MM-DD'."}), 400
+
+        py_day = booking_date.weekday()
+        day_of_week = py_day + 2
+        if day_of_week == 8:
+            day_of_week = 1
+        time_slots = get_time_slots(day_of_week)
+        try:
+            slot_index = int(slot_id) - 1
+            selected_time = time_slots[slot_index]
+        except (ValueError, IndexError):
+            return jsonify({"error": "Invalid slot ID."}), 400
+
+        date_formatted = booking_date.strftime("%d/%m/%Y")
+        start_time1 = f"{date_formatted} {selected_time}:00"
+        local_tz = pytz.timezone(DEFAULT_TIMEZONE)
+        start_time = local_tz.localize(datetime.strptime(f"{date_container} {selected_time}", "%Y-%m-%d %H:%M"))
+        end_time = start_time + timedelta(minutes=45)
 
         # Step 2: Perform the cancellation operation
         success = delete_internet_booking(
@@ -536,10 +579,9 @@ def delete_booking():
 
         # Step 3: Process waiting list notifications
         try:
-            date, time_slot = start_time1.split(" ")[0], start_time1.split(" ")[1]  # Extract date and time
-            formatted_date = datetime.strptime(date, "%d/%m/%Y").strftime("%d/%m/%Y")  # Ensure proper format
-            print(f"[INFO] Triggering waiting list notifications for {formatted_date} at {time_slot}")
-            process_waiting_list_notifications(formatted_date, time_slot)
+            formatted_date = date_formatted
+            print(f"[INFO] Triggering waiting list notifications for {formatted_date} at {selected_time}")
+            process_waiting_list_notifications(formatted_date, selected_time)
         except Exception as e:
             print(f"[ERROR] Failed to process waiting list notifications: {e}")
 

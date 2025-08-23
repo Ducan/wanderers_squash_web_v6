@@ -333,9 +333,12 @@ function refreshLegendsData() {
 /**
  * Create a table row with placeholders for time, periods, and booking cells.
  */
-function createRowWithPlaceholders(time) {
-    const formattedTime = formatTimeTo24Hour(time);
+function createRowWithPlaceholders(slot) {
+    const formattedTime = formatTimeTo24Hour(slot.time);
     const row = document.createElement("tr");
+
+    row.dataset.slotId = slot.slot_id;
+    row.dataset.slotKey = slot.slot_key;
 
     const timeCell = document.createElement("td");
     timeCell.className = "time-cell";
