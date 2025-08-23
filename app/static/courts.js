@@ -236,7 +236,7 @@ function populateLegendsContainer(periods, defaultCosts = {}) {
  * Fetch and update the Time Slot Legend with costs for 45-minute bookings.
  */
 function updateTimeSlotLegend(periods) {
-    fetch('/financials/court_booking_costs')
+    fetchWithRetry('/financials/court_booking_costs')
         .then((response) => {
             if (!response.ok) {
                 throw new Error(`Error fetching court booking costs: ${response.statusText}`);
@@ -254,8 +254,13 @@ function updateTimeSlotLegend(periods) {
         })
         .catch((error) => {
             console.error("Error updating Time Slot Legend:", error.message);
-            // Populate legends with default costs if API fails
-            populateLegendsContainer(periods);
+            if (confirm("Failed to load booking costs. Retry?")) {
+                updateTimeSlotLegend(periods);
+            } else {
+                alert("Unable to load booking costs. Using defaults.");
+                // Populate legends with default costs if API fails
+                populateLegendsContainer(periods);
+            }
         });
 }
 
@@ -327,7 +332,7 @@ function populatePeriodsContainer(periods) {
  * Refresh legends data for the selected date.
  */
 function refreshLegendsData() {
-    fetch(`/periods/get_all_periods`)
+    fetchWithRetry(`/periods/get_all_periods`)
         .then((response) => {
             if (!response.ok) {
                 throw new Error(`Error fetching periods: ${response.statusText}`);
@@ -348,8 +353,10 @@ function refreshLegendsData() {
         .catch((error) => {
             console.error(`Error loading legends: ${error.message}`);
             const legendsContainer = document.getElementById("legends_container");
-            if (legendsContainer) {
-                legendsContainer.innerHTML = `<div>Error loading legends: ${error.message}</div>`;
+            if (confirm("Unable to load legends. Retry?")) {
+                refreshLegendsData();
+            } else if (legendsContainer) {
+                legendsContainer.innerHTML = `<div>Error loading legends: Please try again later.</div>`;
             }
         });
 }
@@ -391,7 +398,7 @@ function createRowWithPlaceholders(slot) {
  * Fetch courts with descriptions and IDs.
  */
 function fetchCourtsWithIds() {
-    return fetch(`${BASE_URL}/descriptions`)
+    return fetchWithRetry(`${BASE_URL}/descriptions`)
         .then((response) => {
             if (!response.ok) {
                 throw new Error(`Error fetching courts: ${response.statusText}`);
@@ -408,6 +415,11 @@ function fetchCourtsWithIds() {
         })
         .catch((error) => {
             console.error("Error fetching courts:", error);
+            if (confirm("Failed to load court information. Retry?")) {
+                return fetchCourtsWithIds();
+            }
+            alert("Unable to load court information.");
+            throw error;
         });
 }
 
@@ -549,7 +561,7 @@ function initializeCourts() {
     const today = new Date();
 
     // Fetch session info and update window.user
-    fetch('/main/session_info')
+    fetchWithRetry('/main/session_info')
         .then(response => response.json())
         .then(data => {
             window.user = data; // Store session data globally
@@ -565,10 +577,16 @@ function initializeCourts() {
                 })
                 .catch((error) => {
                     console.error("Error fetching courts data during initialization:", error);
+                    alert("Unable to load courts data. Please refresh and try again.");
                 });
         })
         .catch(error => {
             console.error("Error fetching session data:", error);
+            if (confirm("Failed to load session information. Retry?")) {
+                initializeCourts();
+            } else {
+                alert("Application cannot load without session information.");
+            }
         });
 
     console.log("Courts initialization complete.");
