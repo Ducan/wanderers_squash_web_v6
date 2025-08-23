@@ -57,11 +57,8 @@ if (typeof BASE_URL === 'undefined') {
 
 // Format date to "dd/MM/yyyy"
 function reformatDateToDdMmYyyy(date) {
-    if (date.includes("-")) {
-        const [year, month, day] = date.split("-");
-        return `${day}/${month}/${year}`;
-    }
-    return date;
+    const [year, month, day] = date.split("-");
+    return `${day}/${month}/${year}`;
 }
 
 // Format time to "HH:MM" 24-hour format
@@ -97,6 +94,9 @@ function populateDatesContainer(datesContainer, today) {
         const dateBlock = document.createElement("div");
         dateBlock.className = "date-block";
         dateBlock.textContent = formatDate(date);
+        // Store the date using local timezone to avoid UTC offset issues
+        // Use en-CA locale to ensure YYYY-MM-DD format
+        dateBlock.dataset.date = date.toLocaleDateString("en-CA");
 
         if (i === 0) {
             dateBlock.classList.add("selected");

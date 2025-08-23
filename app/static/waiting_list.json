@@ -1,1 +1,13 @@
-{}
+{
+    "26/08/2025": {
+        "16:45": [
+            {
+                "player_id": 35621,
+                "first_name": "Heiko",
+                "last_name": "Rusch",
+                "email_address": "heiko4@gmail.com",
+                "status": "active"
+            }
+        ]
+    }
+}
