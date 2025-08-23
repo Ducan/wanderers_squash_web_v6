@@ -15,13 +15,18 @@ function tableBodyClickListener(event) {
 
 /**
  * Format the selected date and time into StartTime1 format.
- * @param {string} date - The date in "yyyy-mm-dd" format.
+ * @param {string} date - The date in "dd/mm/yyyy" format.
  * @param {string} time - The time in "HH:MM" format.
  * @returns {string} - The formatted StartTime1 value in "dd/mm/yyyy HH:MM:SS".
  */
 function formatStartTime1(date, time) {
-    const [year, month, day] = date.split("-");
-    const formattedDate = `${day}/${month}/${year}`; // Convert to "dd/mm/yyyy"
+    let day, month, year;
+    if (date.includes("-")) {
+        [year, month, day] = date.split("-");
+    } else {
+        [day, month, year] = date.split("/");
+    }
+    const formattedDate = `${day}/${month}/${year}`; // Ensure "dd/mm/yyyy"
     const formattedTime = `${time}:00`; // Append "00" for seconds
     return `${formattedDate} ${formattedTime}`;
 }
@@ -50,9 +55,8 @@ function linkBookingsToDatesContainer() {
 
     let dateRange = [];
     dateBlocks.forEach((block, index) => {
-        const blockDate = block.dataset.date; // Date in "yyyy-mm-dd" format
-        const formattedDate = reformatDateToDdMmYyyy(blockDate); // Convert to "dd/mm/yyyy"
-        dateRange.push(formattedDate);
+        const blockDate = block.dataset.date; // Date in "dd/mm/yyyy" format
+        dateRange.push(blockDate);
     });
 
     // Check if a single date or a range of dates is loaded
@@ -65,12 +69,15 @@ function linkBookingsToDatesContainer() {
 
 /**
  * Utility to reformat date to "dd/mm/yyyy" format.
- * @param {string} date - The date in "yyyy-mm-dd" format.
+ * @param {string} date - The date in either "yyyy-mm-dd" or "dd/mm/yyyy" format.
  * @returns {string} - The date in "dd/mm/yyyy" format.
  */
 function reformatDateToDdMmYyyy(date) {
-    const [year, month, day] = date.split("-");
-    return `${day}/${month}/${year}`;
+    if (date.includes("-")) {
+        const [year, month, day] = date.split("-");
+        return `${day}/${month}/${year}`;
+    }
+    return date;
 }
 
 /**
