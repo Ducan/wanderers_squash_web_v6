@@ -5,10 +5,8 @@
  * Updated to handle /main/courts and /main/myprofile correctly.
  *
  * @param {string} section - The section name to display in the top bar.
- * @param {Event} [event=null] - Optional event to prevent default navigation.
  */
-function updateTopBar(section, event = null) {
-    if (event) event.preventDefault(); // Prevent default navigation behavior
+function updateTopBar(section) {
 
     const topBar = document.getElementById("top-bar");
     if (topBar) {
@@ -528,17 +526,18 @@ document.addEventListener("DOMContentLoaded", () => {
         link.addEventListener("click", (event) => {
             const href = link.getAttribute("href");
             const isExternal = href && (href.startsWith("http://") || href.startsWith("https://"));
-    
+
             // Skip handling for external links
             if (isExternal) {
                 console.log(`[INFO] External link clicked: ${href}`);
                 return;
             }
-    
-            const section = event.target.textContent.trim();
-    
+            event.preventDefault();
+
+            const section = link.dataset.section || link.textContent.trim();
+
             // Update the top bar with the selected section
-            updateTopBar(section, event);
+            updateTopBar(section);
     
             // Collapse the menu after a link is clicked
             collapseMenu();
