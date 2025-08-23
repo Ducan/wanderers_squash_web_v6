@@ -87,18 +87,24 @@ def get_time_slots_api():
         date_obj = datetime.strptime(selected_date, "%d/%m/%Y")
 
         # Map day_of_week: 1 = Sunday, 2 = Monday, ..., 7 = Saturday
-        day_of_week = (date_obj.weekday() + 2) % 7 or 7
+        day_of_week = (date_obj.weekday() + 2)
+        if day_of_week == 8:
+            day_of_week = 1
 
-        # Fetch time slots
-        all_time_slots = get_time_slots()
+        # Fetch time slots already filtered for the day
+        filtered_time_slots = get_time_slots(day_of_week)
 
-        # Filter time slots based on the day of the week
-        if day_of_week == 1:  # Sunday
-            filtered_time_slots = [slot for slot in all_time_slots if "05:30" <= slot <= "19:00"]
-        else:
-            filtered_time_slots = all_time_slots  # Use all slots for other days
+        date_iso = date_obj.strftime("%Y-%m-%d")
+        slots = [
+            {
+                "time": slot,
+                "slot_id": idx,
+                "slot_key": f"{date_iso} | slot #{idx}",
+            }
+            for idx, slot in enumerate(filtered_time_slots, start=1)
+        ]
 
-        return jsonify({"time_slots": filtered_time_slots})
+        return jsonify({"time_slots": slots})
     except ValueError:
         return jsonify({"error": "Invalid date format. Expected format: dd/mm/yyyy."}), 400
     except Exception as e:

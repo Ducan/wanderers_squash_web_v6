@@ -245,6 +245,7 @@ function handleSlotClick(cell) {
     const row = cell.parentElement;
     const timeCell = row.querySelector(".time-cell");
     const selectedTime = timeCell.textContent; // e.g., "08:00"
+    const slotId = row.dataset.slotId;
 
     const selectedDate = getSelectedDate(); // Get the selected date from dates_container
 
@@ -271,7 +272,6 @@ function handleSlotClick(cell) {
         return;
     }
 
-    const startTime1 = formatStartTime1(selectedDate, selectedTime); // Combine date and time
 
     // Always fetch the latest user info to ensure up-to-date Lights Credit
     fetch("/bookings/get_user_info", { method: "GET", credentials: "same-origin" })
@@ -298,7 +298,7 @@ function handleSlotClick(cell) {
 
             if (cell.textContent === userName) {
                 // User clicks on their own booking -> Allow deletion
-                deleteBookingFromServer(startTime1, playerNo, row, cell, () => {
+                deleteBookingFromServer(selectedDate, slotId, playerNo, row, cell, () => {
                     // Reload booking counts after deletion
                     refreshBookingLimits(selectedDate);
                 });
@@ -314,7 +314,7 @@ function handleSlotClick(cell) {
                         cell.style.backgroundColor = periodCell.style.backgroundColor;
                     }
 
-                    writeBookingToServer(startTime1, userInfo, row, cell, () => {
+                    writeBookingToServer(slotId, selectedDate, userInfo, row, cell, () => {
                         // Reload booking counts after a successful booking
                         refreshBookingLimits(selectedDate);
                     });
@@ -337,7 +337,7 @@ function handleSlotClick(cell) {
 /**
  * Delete Internet bookings.
  */
-function deleteBookingFromServer(startTime1, playerNo, row, clickedCell) {
+function deleteBookingFromServer(selectedDate, slotId, playerNo, row, clickedCell, onSuccess) {
     try {
         const cellIndex = clickedCell.cellIndex;
         const headerRow = document.querySelector("#courts_container table thead tr");
@@ -354,7 +354,8 @@ function deleteBookingFromServer(startTime1, playerNo, row, clickedCell) {
         }
 
         const payload = {
-            start_time1: startTime1,
+            date_container: selectedDate,
+            slot_id: slotId,
             player_no_column: `PlayerNo_${courtId}`,
             player_no: playerNo,
             selected_court: courtId,
@@ -379,13 +380,14 @@ function deleteBookingFromServer(startTime1, playerNo, row, clickedCell) {
                 if (data.error) {
                     console.error("[ERROR] Backend error:", data.error);
                 } else {
-                    // alert("Booking deleted successfully!");
-                    // Dynamically update Lights Credit
                     updateLightsCredit(data.updated_credit);
                     clickedCell.textContent = "Available";
                     clickedCell.classList.remove("booked");
                     clickedCell.classList.add("available");
                     clickedCell.style.backgroundColor = "#FFFFFF"; // Reset to default color
+                    if (typeof onSuccess === "function") {
+                        onSuccess();
+                    }
                 }
             })
             .catch((error) => {
@@ -466,7 +468,7 @@ function refreshBookingLimits(selectedDate) {
  * Write booking data to the server.
  */
 
-function writeBookingToServer(startTime1, userInfo, row, clickedCell) {
+function writeBookingToServer(slotId, selectedDate, userInfo, row, clickedCell, onSuccess) {
     try {
         const courtId = parseInt(clickedCell.dataset.courtId, 10);
         if (isNaN(courtId)) {
@@ -478,17 +480,13 @@ function writeBookingToServer(startTime1, userInfo, row, clickedCell) {
             return;
         }
 
-        const selectedDate = getSelectedDate(); // e.g., "2024-12-10"
-        const timeCell = row.querySelector(".time-cell");
-        const selectedTime = timeCell.textContent; // e.g., "14:30"
-
         const periodCell = row.querySelector(".period-cell");
         const periodId = periodCell ? periodCell.getAttribute("data-period-id") : "Unknown";
 
         const payload = {
             player_no: userInfo.Mem_No || userInfo.member_no,
             date_container: selectedDate,
-            selected_time: selectedTime,
+            slot_id: slotId,
             selected_court: courtId,
         };
 
@@ -531,6 +529,9 @@ function writeBookingToServer(startTime1, userInfo, row, clickedCell) {
                         console.log("[DEBUG] Financial update:", data.financial_data);
                     }
                     updateLightsCredit(data.updated_credit);
+                    if (typeof onSuccess === "function") {
+                        onSuccess();
+                    }
                 }
             })
             .catch((error) => {

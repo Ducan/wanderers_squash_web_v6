@@ -687,13 +687,15 @@ def get_booked_players(selected_date=None, conn=None):
             
             time_slots = get_time_slots()
             print("Time Slots:", time_slots)
-            
+
             for row in rows:
                 booking_time = row.StartTime1.strftime("%H:%M")
                 nearest_slot = None
-                for slot in time_slots:
+                slot_id = None
+                for idx, slot in enumerate(time_slots, start=1):
                     if slot == booking_time:
                         nearest_slot = slot
+                        slot_id = idx
                         break
 
                 aligned_slot = nearest_slot or booking_time
@@ -707,6 +709,7 @@ def get_booked_players(selected_date=None, conn=None):
                 booked_players.append({
                     "date": row.Date.strftime("%d/%m/%Y"),
                     "time": aligned_slot,
+                    "slot_id": slot_id,
                     "players": cleaned_players
                 })
             return booked_players
