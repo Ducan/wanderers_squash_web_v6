@@ -404,9 +404,9 @@ Includes responsive design, accessibility improvements, compact scrollbars, and 
     </script>
 
     <!-- JavaScript linking files and loaded in order-->
-    <script src="/static/courts.js"></script>
-    <script src="/static/bookings.js"></script>
-    <script src="/static/financials.js"></script>
-    <script src="/static/waitinglist.js"></script>
+    <script src="{{ url_for('static', filename='bookings.js', v='1.0.0') }}" defer></script>
+    <script src="{{ url_for('static', filename='financials.js', v='1.0.0') }}" defer></script>
+    <script src="{{ url_for('static', filename='waitinglist.js', v='1.0.0') }}" defer></script>
+    <script src="{{ url_for('static', filename='courts.js', v='1.0.0') }}" defer></script>
     </body>
 </html>
