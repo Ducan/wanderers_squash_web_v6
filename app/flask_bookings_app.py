@@ -437,7 +437,8 @@ def add_booking():
         # Step 3: Check slot availability then perform the booking
         player_no_column = f"PlayerNo_{selected_court}"
         existing = get_booking_cell(booking_time_str, player_no_column)
-        if existing is not None and existing != -9:
+        # Only treat slots as booked if they contain a value other than None, -9 or 0
+        if existing not in (None, -9, 0):
             return jsonify({"status": "already_booked", "message": "Slot already booked."}), 409
 
         result = update_internet_bookings(

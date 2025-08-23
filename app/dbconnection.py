@@ -1071,7 +1071,10 @@ def get_booking_cell(start_time, player_no_col):
             query = f"SELECT [{player_no_col}] FROM [Bookfile] WHERE [StartTime1] = ?"
             cursor.execute(query, start_time)
             row = cursor.fetchone()
-            return row[0] if row else None
+            # Treat a value of 0 as equivalent to an empty slot
+            if not row:
+                return None
+            return row[0] if row[0] != 0 else None
     except pyodbc.Error as e:
         print(f"Database error in get_booking_cell: {e}")
         return None
@@ -1101,7 +1104,7 @@ def update_internet_bookings(date_container, mem_no, selected_court, selected_ti
             query = f"""
                 UPDATE [Bookfile]
                 SET [{player_no_col}] = ?, [{play_name_col}] = ?
-                WHERE [StartTime1] = ? AND ([{player_no_col}] IS NULL OR [{player_no_col}] = -9)
+                WHERE [StartTime1] = ? AND ([{player_no_col}] IS NULL OR [{player_no_col}] = -9 OR [{player_no_col}] = 0)
             """
             cursor.execute(query, mem_no, player_name, start_time_value)
             conn.commit()
