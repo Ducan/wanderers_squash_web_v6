@@ -1,5 +1,14 @@
 # Courts core data
-from flask import Blueprint, render_template, jsonify, request, session, redirect, url_for
+from flask import (
+    Blueprint,
+    render_template,
+    jsonify,
+    request,
+    session,
+    redirect,
+    url_for,
+    make_response,
+)
 from app.dbconnection import (
     get_time_slots,
     get_periods,
@@ -14,6 +23,15 @@ from datetime import datetime
 
 # Blueprint for the courts functionality
 courts_bp = Blueprint('courts', __name__)
+
+
+@courts_bp.after_request
+def add_no_cache_headers(response):
+    if response.mimetype == "text/html":
+        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+    return response
 
 # Starting loading courts page
 @courts_bp.route('/', methods=['GET'])
@@ -31,7 +49,11 @@ def courts_page():
         'last_name': session.get('last_name'),
         'credit': session.get('credit'),
     }
-    return render_template('courts.html', user=user_info)
+    response = make_response(render_template('courts.html', user=user_info))
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
 
 # Getting Court ID
 @courts_bp.route('/descriptions', methods=['GET'])
