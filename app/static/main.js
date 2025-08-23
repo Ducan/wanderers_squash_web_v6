@@ -239,6 +239,12 @@ async function handleCourtsPage() {
         if (typeof window.initializeCourts === "function") {
             initializeCourts(); // Reinitialize Courts
             console.log("[INFO] Courts initialized successfully.");
+
+            // Reapply court filtering for the previously selected date, if any
+            const date = window.getSelectedDate?.();
+            if (date) {
+                window.refreshCourtsData(date, true);
+            }
         } else {
             throw new Error("initializeCourts function not found.");
         }
