@@ -84,6 +84,7 @@
                         alert(`Error: ${data.error}`);
                     } else {
                         alert('Profile updated successfully.');
+                        fetchSessionInfo();
                     }
                 })
                 .catch(error => {
