@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 120px;
+            width: 100%;
+            margin: 130px auto 10px; /* Adjusted for top spacing, minimal bottom spacing */
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: white;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .container h1 {
+            font-size: 24px;
+            margin: 0 0 20px;
+            text-align: center;
+        }
+
+        .login-field {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+        }
+
+        .login-field label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .login-field input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1em;
+            background-color: #f9f9f9;
+        }
+
+        .login-button {
+            display: block; /* Make the button a block element */
+            margin: 20px auto 0; /* Center horizontally with auto margins */
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            border: none;
+            background-color: #007BFF;
+            color: white;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .login-button:hover {
+            background-color: #0056b3;
+        }
+
+        .error-message {
+            color: red;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        /* FB Link styling */
+        .fb-link {
+            display: block;
+            margin-top: 10px; /* Adjust spacing below the form */
+            text-align: center;
+            color: #007BFF;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .fb-link:hover {
+            color: #0056b3;
+        }
+
+        /* Top bar styling */
+        .top-bar {
+            background: linear-gradient(135deg, #D5393B, #f57f7a);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            letter-spacing: 0.5px;
+            transition: 0.3s ease;
+        }
+
+        /* Sub-bar styling */
+        .sub-bar {
+            background-color: #333;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            position: fixed;
+            top: 50px;
+            left: 0;
+            right: 0;
+            width: 100%;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 18px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Top bar -->
+    <header class="top-bar">
+        Wanderers Squash Online Booking
+    </header>
+
+    <!-- Sub bar -->
+    <div class="sub-bar">
+        User Login
+    </div>
+
+    <!-- Wrapper for login container and FB link -->
+    <div class="login-wrapper">
+        <!-- Main container -->
+        <div class="container">
+            
+            <!-- Error message block -->
+            {% if error %}
+                <div class="error-message">{{ error }}</div>
+            {% endif %}
+            <!-- Login form -->
+            <form action="/login" method="post">
+                <div class="login-field">
+                    <label for="username">Member No:</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="login-field">
+                    <label for="password">Pin:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <!-- Submit button -->
+                <button type="submit" class="login-button">Login</button>
+            </form>
+        </div>
+
+        <!-- FB link directly below the login form -->
+        <a href="https://www.facebook.com/Wandererssquashclub" target="_blank" class="fb-link">Visit us on Facebook</a>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,412 @@
+<!-- 
+Developer Notes:
+courts.html is designed to display a squash court booking schedule. 
+Includes responsive design, accessibility improvements, compact scrollbars, and hover functionality.
+-->
+        
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Courts Schedule</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <style>
+        
+
+        /* Universal Box Sizing */
+        * {
+            box-sizing: border-box;
+        }
+
+        /* Body styling for consistent layout and alignment */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        /* Header styling for the Court Booking Schedule */
+        .schedule-header {
+            text-align: center;
+            font-size: clamp(0.6em, 2vw, 2.0em);
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        /* Common container styles for dates_container and courts_container */
+        .container-wrapper {
+            position: relative;
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .container {
+            max-width: 800px; /* Fixed max-width for alignment */
+            width: 100%;
+            margin: 0 auto; /* Center alignment */
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 0; /* No extra padding inside the container */
+            overflow-x: auto;
+        }
+
+        /* Scrollable container */
+        .scrollable {
+            display: flex;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+        }
+
+        /* Scrollbar styling for both containers */
+        .scrollable::-webkit-scrollbar {
+            height: 6px; /* Reduce scrollbar height */
+            width: 6px; /* Reduce scrollbar width */
+        }
+
+        .scrollable::-webkit-scrollbar-track {
+            background: #f4f4f4; /* Light background for the scrollbar track */
+            border-radius: 5px; /* Rounded edges for the track */
+        }
+
+        .scrollable::-webkit-scrollbar-thumb {
+            background: #888; /* Darker thumb color */
+            border-radius: 5px; /* Rounded edges for the thumb */
+        }
+
+        .scrollable::-webkit-scrollbar-thumb:hover {
+            background: #555; /* Darker color on hover */
+        }
+
+        /* Time description header styling */
+            th.time-description {
+                position: sticky;
+                left: 0; /* Sticks to the left edge */
+                z-index: 3; /* Higher z-index to stay above booking cells */
+                background-color: #f4f4f4; /* Ensures no transparency */
+                box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1); /* Add shadow for visibility */
+                text-align: center;
+                vertical-align: middle;
+                font-size: clamp(10px, 1vw, 14px);
+                padding: 8px;
+                white-space: nowrap;
+                border-right: 1px solid #ddd; /* Add a dividing border for clarity */
+            }
+
+            /* Periods description header styling */
+            th.periods-description {
+                position: sticky;
+                width: 30px;
+                left: 40px; /* Offset to align with Time column */
+                z-index: 3; /* Higher z-index to stay above booking cells */
+                background-color: #f4f4f4; /* Ensures no transparency */
+                box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1); /* Add shadow for visibility */
+                text-align: center;
+                vertical-align: middle;
+                font-size: clamp(8px, 1vw, 12px);
+                padding: 8px;
+                white-space: nowrap;
+                border-right: 1px solid #ddd; /* Add a dividing border for clarity */
+            }
+
+            /* Time column body cells */
+            .courts_container table tbody td:first-child {
+                position: sticky;
+                left: 0; /* Align with Time column header */
+                z-index: 2; /* Lower than header, but above booking cells */
+                background-color: #f4f4f4; /* Ensure no transparency */
+                box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1); /* Add shadow for visibility */
+                text-align: center;
+                padding: 8px;
+                white-space: nowrap;
+                border-right: 1px solid #ddd; /* Add a dividing border for clarity */
+            }
+
+            /* Periods column body cells */
+            .courts_container table tbody td:nth-child(2) {
+                position: sticky;
+                left: 40px; /* Align with Periods column header */
+                z-index: 2; /* Lower than header, but above booking cells */
+                background-color: #f4f4f4; /* Ensure no transparency */
+                box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1); /* Add shadow for visibility */
+                text-align: center;
+                padding: 8px;
+                white-space: nowrap;
+                border-right: 1px solid #ddd; /* Add a dividing border for clarity */
+            }
+
+
+        /* Dates container */
+        .dates_container {
+            position: sticky;
+            top: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start; /* Align items to the top */
+            padding: 10px 0; /* Current padding */
+            /* Add or modify the properties below as needed */
+            width: 100%; /* Example: Set width explicitly */
+            height: auto; /* Example: Set height explicitly */
+            margin: 2px 0; /* Example: Add space around the container */
+            gap: 10px; /* Example: Add space between date blocks */
+        }
+
+        .date-block {
+            flex: 1;
+            margin: 0 5px;
+            padding: 10px 5px; /* Top/Bottom: 10px, Left/Right: 15px */
+            text-align: center; /* Center-align text horizontally */
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: clamp(8px, 1.5vw, 10px); /* Dynamically scale font size */
+            font-weight: bold;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s, color 0.3s;
+            max-width: 80px; /* Restrict maximum width */
+            white-space: nowrap; /* Now wrapping */
+            word-wrap: break-word; /* Enable breaking long words */
+            overflow: visible; /* Ensure no text is cut off */
+            text-overflow: clip; /* Avoid truncation or ellipsis */
+            line-height: 1.2; /* Adjust line height for readability */
+        }
+
+        .date-block.selected {
+            background-color: #333;
+            color: white;
+        }
+
+        /* Legends container styling */
+        .legends_container {
+        display: flex;
+        white-space: nowrap;
+        align-items: center; /* Center-align items vertically */
+        justify-content: flex-start; /* Align items horizontally */
+        padding: 2px;
+        padding-left: 20px; /* Increase left padding for more space before text */
+        margin: 1px 0; /* Space between dates and courts containers */
+        background-color: #fff; /* White background for clarity */
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+        font-size: 9px; /* Apply consistent font size to all text */
+        overflow-x: auto; /* Enable horizontal scrolling */
+        scroll-behavior: smooth; /* Smooth scrolling */
+    }
+
+    /* Apply the same scrollbar styles */
+        .legends_container::-webkit-scrollbar {
+            height: 6px; /* Scrollbar height */
+        }
+
+        .legends_container::-webkit-scrollbar-track {
+            background: #f4f4f4; /* Track background color */
+            border-radius: 5px; /* Rounded track edges */
+        }
+
+        .legends_container::-webkit-scrollbar-thumb {
+            background: #888; /* Thumb color */
+            border-radius: 5px; /* Rounded thumb edges */
+        }
+
+        .legends_container::-webkit-scrollbar-thumb:hover {
+            background: #555; /* Hover color for the thumb */
+        }
+        
+        /* Responsive behavior */
+        @media (max-width: 600px) {
+        .legends_container {
+            overflow-x: auto;
+        }
+    }
+
+    /* Label styling for "Periods Legends" */
+    .legends_container div:first-child {
+        font-weight: bold; /* Keep the bold effect */
+        font-size: inherit; /* Ensure it inherits the font size from the container */
+    }
+
+    /* Individual legend item styling */
+    .legend-item {
+        display: inline-block; /* Ensures legends align horizontally */
+        padding: 5px 10px;
+        margin-right: 5px;
+        border-radius: 5px;
+        font-size: inherit; /* Match the font size to the container */
+        text-align: center;
+        cursor: default;
+    }
+
+        /* Color box for legends */
+        .legend-item .color-box {
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+            border: 1px solid #ccc; /* Subtle border */
+        }
+
+        /* Courts container */
+        .courts_container {
+            display: flex;
+            flex-direction: column; /* Align like the dates_container */
+            padding: 15px; /* Align padding */
+            background-color: #f4f4f4; /* Consistent background */
+            border: 1px solid #ddd;
+            border-radius: 5px; /* Same as dates_container */
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Similar shadow */
+        }
+
+        /* Booking Cell Styling */
+        .courts_container table tbody td {
+            z-index: 1; /* Ensure booking cells stay below the sticky column */
+            position: relative;
+            padding: 12px 16px;
+            text-align: center;
+            border: 1px solid #ddd;
+            vertical-align: middle;
+            background-color: white;
+            border-radius: 5px; /* Consistent rounded corners */
+            font-size: clamp(8px, 1.5vw, 13px); /* Dynamically scale font size */
+            overflow: hidden; /* Ensure text does not overflow */
+            text-overflow: ellipsis; /* Add ellipsis for overflowing text */
+            white-space: nowrap; /* Prevent text from wrapping */
+            max-width: 100px; /* Restrict maximum width of booking cells */
+        }
+
+        /* Full color for booked cells */
+        .courts_container table tbody td.booked {
+            color: #000; /* Black text for contrast */
+            font-size: clamp(8px, 1.5vw, 13px); /* Dynamically scale font size */
+            overflow: hidden; /* Ensure text does not overflow */
+            text-overflow: ellipsis; /* Add ellipsis for overflowing text */
+            white-space: nowrap; /* Prevent text from wrapping */
+            max-width: 100px; /* Restrict maximum width of booking cells */
+            cursor: pointer; /* Hand pointer for booked slots */
+        }
+
+        /* Period Cell Styling */
+        .period-cell {
+            background-color: #f4f4f4; /* Same background as time-cell */
+            box-shadow: none; /* No shadow for consistent look with time-cell */
+            text-align: center;
+            padding: 8px;
+            white-space: nowrap;
+            border-right: 1px solid #ddd; /* Dividing border */
+            }
+
+        .courts_container table tbody td:not(.time-cell):not(.period-cell):hover {
+            background-color: #d9d9d9; /* Slight hover effect */
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3); /* Highlight hover */
+        }
+
+        .time-cell {
+            background-color: #f4f4f4; /* Default color */
+            box-shadow: none; /* No shadow */
+        }
+
+        .waiting-list-cell {
+        cursor: pointer; /* Ensures the hand pointer only for waiting list time selections */
+        
+        }
+
+        /* Tooltip for booking cells */
+        .courts_container table tbody td.booked:hover {
+            color: #000; /* Ensure text color remains the same */
+            overflow: visible; /* Show full text */
+            white-space: normal; /* Allow text to wrap */
+            z-index: 10; /* Ensure it appears on top */
+            position: relative; /* Required for proper z-index behavior */
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow for focus */
+        }
+
+        .courts_container table tbody td.available {
+            cursor: pointer; /* Hand pointer for available slots */
+        }
+
+        /* Court Description Header Styling */
+        th.court-description {
+            position: sticky; /* Ensure the header stays in place */
+            top: 0; /* Stick to the top like Time and Periods columns */
+            z-index: 3; /* Higher z-index to stay above table cells */
+            background-color: #f4f4f4; /* Consistent background with Time and Periods */
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+            border-bottom: 1px solid #ddd; /* Add a dividing line for clarity */
+            text-align: center; /* Center-align text */
+            max-width: 100px; /* Restrict maximum width for consistency */
+            word-wrap: break-word; /* Enable wrapping for long text */
+            white-space: normal; /* Allow wrapping to the next line */
+            overflow: visible; /* Ensure no part of the text is clipped */
+            text-overflow: ellipsis; /* Add ellipsis for overflowing text */
+            font-size: clamp(10px, 1vw, 14px); /* Dynamically adjust font size */
+            line-height: 1.2; /* Maintain proper spacing between lines */
+            padding: 8px; /* Add padding for spacing */
+        }
+
+    </style>
+</head>
+<body>
+
+
+
+<!-- Dates container wrapper -->
+<div class="container-wrapper">
+    <div class="container scrollable dates_container" id="dates_container"></div>
+</div>
+
+<!-- Legends container wrapper -->
+<div class="container legends_container" id="legends_container">
+    <!-- Dynamically populated legends will appear here -->
+</div>
+
+<!-- Courts container wrapper -->
+<div class="container-wrapper">
+
+    <!-- Start of Update Courts container -->
+    <!-- Time Slots Container -->
+        <div class="container scrollable time_slots_container" id="time_slots_container">
+            <!-- Time dynamically populated here -->
+        </div>
+
+        <!-- Courts Container -->
+        <div class="container scrollable courts_container" id="courts_container">
+            <div id="courts-container">
+                <div id="courts-data-container"></div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th class="time-description">Time</th>
+                        <th class="periods-description"></th>
+                        <th class="court-description"></th>
+                        <th class="court-description"></th>
+                        <th class="court-description"></th>
+                        <th class="court-description"></th>
+                    </tr>
+                </thead>
+                <tbody id="time_slots_table_body">
+                    <!-- Rows dynamically populated here -->
+                </tbody>
+            </table>
+        </div>
+    <!-- Expose the user object globally for JavaScript -->
+    <script>
+        // Use JSON.stringify to avoid syntax errors in Visual Studio Code
+        window.user = JSON.parse('{{ user|tojson|safe }}');
+    </script>
+
+    <!-- JavaScript linking files and loaded in order-->
+    <script src="/static/courts.js"></script>
+    <script src="/static/bookings.js"></script>
+    <script src="/static/financials.js"></script>
+    <script src="/static/waitinglist.js"></script>
+    </body>
+</html>

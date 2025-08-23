@@ -1,0 +1,39 @@
+[2025-08-10 16:53:57] Starting: waitress-serve --host=0.0.0.0 --port=8181 --threads=12 --backlog=2048 --recv-bytes=16384 --send-bytes=32768 run:app (cwd=C:\wanderers_web)
+[2025-08-10 16:54:45] Waitress exited. Auto-restarting in 2s.
+[2025-08-10 16:54:47] Starting: waitress-serve --host=0.0.0.0 --port=8181 --threads=12 --backlog=2048 --recv-bytes=16384 --send-bytes=32768 run:app (cwd=C:\wanderers_web)
+[2025-08-10 17:01:56] Starting: waitress-serve --host=0.0.0.0 --port=8181 --threads=12 --backlog=2048 --recv-bytes=16384 --send-bytes=32768 run:app (cwd=C:\wanderers_web, logging=OFF)
+[2025-08-10 17:02:32] Logging toggled ON; old logs deleted. Restarting.
+[2025-08-10 17:02:32] Starting: waitress-serve --host=0.0.0.0 --port=8181 --threads=12 --backlog=2048 --recv-bytes=16384 --send-bytes=32768 run:app (cwd=C:\wanderers_web, logging=ON)
+[2025-08-10 17:03:24] Logging toggled OFF. Restarting.
+[2025-08-10 17:03:24] Starting: waitress-serve --host=0.0.0.0 --port=8181 --threads=12 --backlog=2048 --recv-bytes=16384 --send-bytes=32768 run:app (cwd=C:\wanderers_web, logging=OFF)
+[2025-08-10 17:08:15] Starting: waitress-serve --host=0.0.0.0 --port=8181 --threads=12 --backlog=2048 --recv-bytes=16384 --send-bytes=32768 run:app (cwd=C:\wanderers_web, logging=OFF)
+[2025-08-10 17:08:41] Logging toggled ON; old logs deleted. Restarting.
+[2025-08-10 17:08:41] Starting: waitress-serve --host=0.0.0.0 --port=8181 --threads=12 --backlog=2048 --recv-bytes=16384 --send-bytes=32768 run:app (cwd=C:\wanderers_web, logging=ON)
+[2025-08-10 17:09:25] Logging toggled OFF; old logs deleted. Restarting.
+[2025-08-10 17:09:26] Starting: waitress-serve --host=0.0.0.0 --port=8181 --threads=12 --backlog=2048 --recv-bytes=16384 --send-bytes=32768 run:app (cwd=C:\wanderers_web, logging=OFF)
+[2025-08-10 17:15:16] Starting: waitress-serve --host=0.0.0.0 --port=8181 --threads=12 --backlog=2048 --recv-bytes=16384 --send-bytes=32768 run:app (cwd=C:\wanderers_web, logging=OFF)
+[2025-08-10 17:16:12] Logging toggled ON; logs cleared; restarting.
+[2025-08-10 17:16:12] Starting: waitress-serve --host=0.0.0.0 --port=8181 --threads=12 --backlog=2048 --recv-bytes=16384 --send-bytes=32768 run:app (cwd=C:\wanderers_web, logging=ON)
+[2025-08-10 17:16:42] Logging toggled OFF; logs cleared; restarting.
+[2025-08-10 17:16:42] Starting: waitress-serve --host=0.0.0.0 --port=8181 --threads=12 --backlog=2048 --recv-bytes=16384 --send-bytes=32768 run:app (cwd=C:\wanderers_web, logging=OFF)
+[2025-08-10 17:19:38] Starting: waitress-serve --host=0.0.0.0 --port=8181 --threads=12 --backlog=2048 --recv-bytes=16384 --send-bytes=32768 run:app (cwd=C:\wanderers_web, logging=OFF)
+[2025-08-10 17:20:18] Waitress exited. Auto-restarting in 2s.
+[2025-08-10 17:20:18] Logging toggled ON; logs cleared; restarting.
+[2025-08-10 17:20:18] Starting: waitress-serve --host=0.0.0.0 --port=8181 --threads=12 --backlog=2048 --recv-bytes=16384 --send-bytes=32768 run:app (cwd=C:\wanderers_web, logging=ON)
+[2025-08-10 17:20:37] Logging toggled OFF; logs cleared; restarting.
+[2025-08-10 17:20:37] Starting: waitress-serve --host=0.0.0.0 --port=8181 --threads=12 --backlog=2048 --recv-bytes=16384 --send-bytes=32768 run:app (cwd=C:\wanderers_web, logging=OFF)
+[2025-08-10 17:25:45] Starting: waitress-serve --host=0.0.0.0 --port=8181 --threads=12 --backlog=2048 --recv-bytes=16384 --send-bytes=32768 run:app (cwd=C:\wanderers_web, logging=OFF)
+[2025-08-10 17:26:24] Logging toggled ON; logs cleared; restarting.
+[2025-08-10 17:26:24] Starting: waitress-serve --host=0.0.0.0 --port=8181 --threads=12 --backlog=2048 --recv-bytes=16384 --send-bytes=32768 run:app (cwd=C:\wanderers_web, logging=ON)
+[2025-08-10 17:27:02] Logging toggled OFF; logs cleared; restarting.
+[2025-08-10 17:27:02] Starting: waitress-serve --host=0.0.0.0 --port=8181 --threads=12 --backlog=2048 --recv-bytes=16384 --send-bytes=32768 run:app (cwd=C:\wanderers_web, logging=OFF)
+[2025-08-10 17:30:27] Starting: waitress-serve --host=0.0.0.0 --port=8181 --threads=12 --backlog=2048 --recv-bytes=16384 --send-bytes=32768 run:app (cwd=C:\wanderers_web, logging=OFF)
+[2025-08-10 17:31:31] Logging toggled ON; logs cleared; restarting.
+[2025-08-10 17:31:31] Starting: waitress-serve --host=0.0.0.0 --port=8181 --threads=12 --backlog=2048 --recv-bytes=16384 --send-bytes=32768 run:app (cwd=C:\wanderers_web, logging=ON)
+[2025-08-10 17:34:52] Starting: waitress-serve --host=0.0.0.0 --port=8181 --threads=12 --backlog=2048 --recv-bytes=16384 --send-bytes=32768 run:app (cwd=C:\wanderers_web, logging=ON)
+[2025-08-10 17:35:03] Logging toggled OFF; logs cleared; restarting.
+[2025-08-10 17:35:03] Starting: waitress-serve --host=0.0.0.0 --port=8181 --threads=12 --backlog=2048 --recv-bytes=16384 --send-bytes=32768 run:app (cwd=C:\wanderers_web, logging=OFF)
+[2025-08-10 17:40:03] Starting: waitress-serve --host=0.0.0.0 --port=8181 --threads=12 --backlog=2048 --recv-bytes=16384 --send-bytes=32768 run:app (cwd=C:\wanderers_web, logging=OFF)
+[2025-08-10 17:45:15] Starting: waitress-serve --host=0.0.0.0 --port=8181 --threads=12 --backlog=2048 --recv-bytes=16384 --send-bytes=32768 run:app (cwd=C:\wanderers_web, logging=OFF)
+[2025-08-10 17:46:15] Starting: waitress-serve --host=0.0.0.0 --port=8181 --threads=12 --backlog=2048 --recv-bytes=16384 --send-bytes=32768 run:app (cwd=C:\wanderers_web, logging=OFF)
+[2025-08-10 17:52:09] Starting: waitress-serve --host=0.0.0.0 --port=8181 --threads=12 --backlog=2048 --recv-bytes=16384 --send-bytes=32768 run:app (cwd=C:\wanderers_web, logging=OFF)

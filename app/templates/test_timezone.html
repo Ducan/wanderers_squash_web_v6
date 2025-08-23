@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Timezone and Date Format</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 2rem;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 2rem;
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        .title {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .info {
+            margin: 1rem 0;
+            padding: 0.5rem;
+            background: #e3f2fd;
+            border-left: 5px solid #2196f3;
+        }
+        .highlight {
+            color: #d32f2f;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Title of the page -->
+        <div class="title">Timezone and Date Format Test</div>
+
+        <!-- Displaying current timezone -->
+        <div class="info">
+            <strong>Configured Timezone:</strong> 
+            <!-- Accessing Flask configuration for timezone -->
+            <span class="highlight">{{ configured_timezone }}</span>
+        </div>
+
+        <!-- Displaying the current date and time in the configured timezone -->
+        <div class="info">
+            <strong>Current Date and Time:</strong> 
+            <!-- Using the 'get_current_time' function exposed globally by Flask -->
+            <span class="highlight">{{ get_current_time() }}</span>
+        </div>
+
+        <!-- Explanation of what the test verifies -->
+        <div>
+            This page tests whether the application is correctly configured for the 
+            timezone <span class="highlight">Africa/Windhoek</span> (GMT+2), and whether 
+            the default date format is <span class="highlight">dd-mm-yyyy</span> and the 
+            time is in 24-hour format <span class="highlight">HH:MM</span>. The above 
+            values should match the expected output if the configuration is correct.
+        </div>
+    </div>
+        <!-- Include timezone.js -->
+        <script src="/static/timezone.js"></script>
+</body>
+</html>

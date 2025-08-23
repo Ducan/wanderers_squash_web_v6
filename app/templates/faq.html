@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: white;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .faq-header {
+            text-align: center;
+            font-size: clamp(1.5rem, 2vw, 1.8rem);
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .collapsible-section {
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            padding: 10px;
+        }
+        .collapsible-header {
+            font-size: clamp(1.2rem, 2vw, 1.5rem);
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            border-bottom: 2px solid #555;
+            padding: 5px 10px;
+        }
+        .collapsible-header:hover {
+            background-color: #f0f0f0;
+        }
+        .collapsible-header span {
+            font-size: 1.3rem;
+            margin-left: 10px;
+            color: #555;
+        }
+        .collapsible-content {
+            display: none;
+            padding: 10px 20px;
+        }
+        .faq-item h3 {
+            font-size: clamp(1rem, 1.8vw, 1.2rem);
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        ul {
+            margin: 10px 0 20px;
+            padding-left: 20px;
+        }
+        ul li {
+            font-size: clamp(1rem, 1.5vw, 1.1rem);
+            color: #555;
+            margin-bottom: 5px;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="faq-header">Frequently Asked Questions (FAQs)</h1>
+
+        <!-- Bookings and Cancellations Section -->
+        <div class="collapsible-section">
+            <div class="collapsible-header" onclick="toggleSection(this)">
+                <span>Bookings and Cancellations</span>
+                <span>+</span>
+            </div>
+            <div class="collapsible-content">
+                <div class="faq-item">
+                    <h3>How do I make a booking?</h3>
+                    <ul>
+                        <li>From the 8-day date list, click on the date you want to book.</li>
+                        <li>Click on the session block for the time you want.</li>
+                        <li>If the booking is successful, your name will appear in the session block.</li>
+                    </ul>
+                </div>
+                <div class="faq-item">
+                    <h3>How do I cancel a booking?</h3>
+                    <ul>
+                        <li>Click on your name in the session block you want to cancel.</li>
+                        <li>If the cancellation is successful, your name will be removed from the session block.</li>
+                        <li>Use the View Bookings link to display all your current weekly bookings and cancel them from there.</li>
+                        <li>In the View Bookings link, the "Cancel" button will display "Cannot Cancel" for expired bookings</li>
+                    </ul>
+                </div>
+                <div class="faq-item">
+                    <h3>What are the booking rules?</h3>
+                    <ul>
+                        <li>You can only book sessions for the next 8 days.</li>
+                        <li>You cannot make a booking if your lights credit is below 0.00 NAD.</li>
+                        <li>You cannot book a session that has already started.</li>
+                        <li>Each week (Monday to Sunday), weekly booking limits are reset.</li>
+                        <li>A message will appear when the daily or weekly booking limit is reached, displaying the limit details.</li>
+                    </ul>
+                </div>
+                <div class="faq-item">
+                    <h3>What are the cancellation rules?</h3>
+                    <ul>
+                        <li>You cannot cancel bookings that have already started.</li>
+                        <li>You cannot cancel bookings made by other players.</li>
+                        <li>You cannot cancel bookings that are in the past. Court time slots will show as Unavailable.</li>
+                    </ul>
+                </div>
+                <div class="faq-item">
+                    <h3>What is the cost of online booking or cancelling?</h3>
+                    <ul>
+                        <li>Booking costs can be changed at any time.</li>
+                        <li>Booking costs N$1.00.</li>
+                        <li>Cancellation costs N$0.50.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Legend Section -->
+        <div class="collapsible-section">
+            <div class="collapsible-header" onclick="toggleSection(this)">
+                <span>Legend</span>
+                <span>+</span>
+            </div>
+            <div class="collapsible-content">
+                <div class="faq-item">
+                    <h3>What is the purpose of the Time Slot Legend?</h3>
+                    <ul>
+                        <li>The Time Slot Legend helps you understand the session periods available for booking. Each period is colour-coded to represent specific booking categories, such as Normal or Peak Time.</li>
+                        <li>Next to each Time Slot Legend description is the cost for the full 45-minute court session.</li>
+                    </ul>
+                </div>
+                <div class="faq-item">
+                    <h3>What is Waiting List Availability?</h3>
+                    <ul>
+                        <li>Waiting List Availability shows the availability of sessions that are full. You can join the waiting list for these sessions if they become available later.</li>
+                        <li>Click on the coloured Time box to be added to the waiting list. Click again to be removed. Make sure your email address is correct in the My Profile section.</li>
+                    </ul>
+                </div>
+                <div class="faq-item">
+                    <h3>Where is the Lights Credit value displayed?</h3>
+                    <ul>
+                        <li>Your current Lights Credit is displayed in the legend section, so you can easily check your balance while booking.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Information Section -->
+        <div class="collapsible-section">
+            <div class="collapsible-header" onclick="toggleSection(this)">
+                <span>System Information</span>
+                <span>+</span>
+            </div>
+            <div class="collapsible-content">
+                <div class="faq-item">
+                    <h3>How long can I use the system?</h3>
+                    <ul>
+                        <li>You can use the system for as long as you want, but the system will log you out after 5 minutes of inactivity.</li>
+                        <li>For security reasons, it is recommended to log out as soon as you finish making or cancelling your bookings.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Tips for Players Section -->
+        <div class="collapsible-section">
+            <div class="collapsible-header" onclick="toggleSection(this)">
+                <span>Additional Tips for Players</span>
+                <span>+</span>
+            </div>
+            <div class="collapsible-content">
+                <div class="faq-item">
+                    <h3>What is Peak Time?</h3>
+                    <ul>
+                        <li>Peak Time sessions are the busiest and are marked in the specific colour as shown on the Time Slot Legend.</li>
+                        <li>Make sure to plan ahead as slots may fill up quickly.</li>
+                    </ul>
+                </div>
+                <div class="faq-item">
+                    <h3>What happens if I have insufficient credit?</h3>
+                    <ul>
+                        <li>If your lights credit falls below 0.00 NAD, you will not be able to make new bookings.</li>
+                        <li>Check your credit regularly and top up if needed to avoid missing out.</li>
+                        <li>Contact the squash committee if unsure about top-up options.</li>
+                    </ul>
+                </div>
+                <div class="faq-item">
+                    <h3>What if I cannot make a session I have booked?</h3>
+                    <ul>
+                        <li>If bookings are not cancelled, a penalty fee may be applied depending on the Time Slot Period.</li>
+                    </ul>
+                </div>
+                <div class="faq-item">
+                    <h3>What should I do if the system logs me out?</h3>
+                    <ul>
+                        <li>Simply log back in to continue using the system.</li>
+                        <li>Avoid extended periods of inactivity to prevent being logged out.</li>
+                    </ul>
+                </div>
+                <div class="faq-item">
+                    <h3>What should I do if the system is not loading</h3>
+                    <ul>
+                        <li>Simply logout and login again.</li>
+                        <li>Refresh the webpage.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- About Booking System Section -->
+        <div class="collapsible-section">
+            <div class="collapsible-header" onclick="toggleSection(this)">
+                <span>About Booking System</span>
+                <span>+</span>
+            </div>
+            <div class="collapsible-content">
+                <div class="faq-item">
+                    <h3>What is the Booking System?</h3>
+                    <ul>
+                        <li>The Booking System is a user-friendly platform designed to simplify scheduling and manage reservations for Wanderers Squash.</li>
+                    </ul>
+                </div>
+                <div class="faq-item">
+                    <h3>Who developed the Booking System?</h3>
+                    <ul>
+                        <li>The system was primarily developed by Heiko Rusch, with Louw Greyvenstein contributing as the verification developer. Their collaborative effort emphasises teamwork and was generously provided at no cost.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleSection(header) {
+            const content = header.nextElementSibling;
+            const symbol = header.querySelector("span:last-child");
+
+            if (content.style.display === "none" || content.style.display === "") {
+                content.style.display = "block";
+                symbol.textContent = "-";
+                header.parentElement.style.backgroundColor = "#e8e8e8"; // Light grey for expanded state
+            } else {
+                content.style.display = "none";
+                symbol.textContent = "+";
+                header.parentElement.style.backgroundColor = "#f9f9f9"; // Original color for collapsed state
+            }
+        }
+    </script>
+</body>
+</html>
