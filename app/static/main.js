@@ -368,6 +368,8 @@ function toggleProfileEditing(button) {
                 alert(`Error: ${data.error}`);
             } else {
                 alert('Profile updated successfully.');
+                fetchSessionInfo();              // Refresh session banner with updated details
+                // optionally: window.location.reload();
             }
         })
         .catch(error => {
