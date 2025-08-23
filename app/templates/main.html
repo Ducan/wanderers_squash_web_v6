@@ -167,14 +167,14 @@
     <!-- nav-bar with hamburger menu -->
     <nav class="nav-bar">
         <div class="nav-links" id="nav-links">
-            <a href="#" onclick="updateTopBar('Courts', event)">Courts</a>
-            <a href="#" onclick="updateTopBar('View Bookings'); loadContent('/bookings/viewbookings/');">View Bookings</a>
-            <a href="#" onclick="updateTopBar('My Profile'); loadContent('/main/myprofile/')">My Profile</a>
+            <a href="#" data-section="Courts">Courts</a>
+            <a href="#" data-section="View Bookings">View Bookings</a>
+            <a href="#" data-section="My Profile">My Profile</a>
             <a href="https://www.wanderers.org.na//" target="_blank">Wanderers Website</a>
             <a href="https://wandererssquash.teamapp.com/" target="_blank">WSC TeamApp</a>
             <a href="https://www.facebook.com/Wandererssquashclub" target="_blank">FB</a>
-            <a href="/main/faq/" onclick="loadContent('/main/faq/')">FAQ</a>
-            <a href="#" onclick="updateTopBar('Logout', event)">Logout</a>
+            <a href="#" data-section="FAQ">FAQ</a>
+            <a href="#" data-section="Logout">Logout</a>
         </div>
         <div class="hamburger" id="hamburger" onclick="toggleMenu()">
             ☰
