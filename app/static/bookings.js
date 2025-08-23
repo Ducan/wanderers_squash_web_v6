@@ -74,6 +74,30 @@ function reformatDateToDdMmYyyy(date) {
 }
 
 /**
+ * Fetch helper that retries requests with exponential backoff and a timeout.
+ * Aborts the request using AbortController when the timeout is reached.
+ */
+async function fetchWithRetry(url, options = {}, retries = 3, timeout = 5000) {
+    for (let attempt = 0; attempt <= retries; attempt++) {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), timeout);
+        try {
+            const response = await fetch(url, { ...options, signal: controller.signal });
+            clearTimeout(timer);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response;
+        } catch (error) {
+            clearTimeout(timer);
+            if (attempt === retries) throw error;
+            const delay = Math.pow(2, attempt) * 500;
+            await new Promise((res) => setTimeout(res, delay));
+        }
+    }
+}
+
+/**
  * Duplicate booking safeguard utilities.
  * Store the last booking payload and timestamp in sessionStorage to avoid
  * rapid duplicate submissions.
@@ -112,7 +136,7 @@ window.addEventListener("pagehide", clearLastBooking);
 async function checkBookingLimits(selectedDate, periodId, onSuccess) {
     try {
         // Fetch daily booking limits
-        const dailyResponse = await fetch(`/bookings/booking_daily_limits?date=${reformatDateToDdMmYyyy(selectedDate)}`);
+        const dailyResponse = await fetchWithRetry(`/bookings/booking_daily_limits?date=${reformatDateToDdMmYyyy(selectedDate)}`);
         const dailyData = await dailyResponse.json();
 
         // Check if the specific period's daily limit is reached
@@ -138,7 +162,7 @@ async function checkBookingLimits(selectedDate, periodId, onSuccess) {
         const endDate = reformatDateToDdMmYyyy(sunday.toISOString().split("T")[0]);
 
         // Fetch weekly booking limits
-        const weeklyResponse = await fetch(
+        const weeklyResponse = await fetchWithRetry(
             `/bookings/booking_weekly_limits?start_date=${startDate}&end_date=${endDate}`
         );
         const weeklyData = await weeklyResponse.json();
@@ -274,11 +298,8 @@ function handleSlotClick(cell) {
 
 
     // Always fetch the latest user info to ensure up-to-date Lights Credit
-    fetch("/bookings/get_user_info", { method: "GET", credentials: "same-origin" })
-        .then((response) => {
-            if (!response.ok) throw new Error(`Error: ${response.status} ${response.statusText}`);
-            return response.json();
-        })
+    fetchWithRetry("/bookings/get_user_info", { method: "GET", credentials: "same-origin" })
+        .then((response) => response.json())
         .then((userInfo) => {
             window.user = userInfo; // Keep global user data in sync
             updateLightsCredit(userInfo.credit); // Update UI with the latest credit
@@ -369,7 +390,7 @@ function deleteBookingFromServer(selectedDate, slotId, playerNo, row, clickedCel
        // });
 
         // Send POST request to delete booking on the server
-        fetch("/bookings/delete", {
+        fetchWithRetry("/bookings/delete", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
@@ -440,11 +461,8 @@ function updateLightsCredit(updatedCredit) {
  * @param {string} selectedDate - The selected date in dd/MM/yyyy format.
  */
 function refreshBookingLimits(selectedDate) {
-    fetch(`/bookings/get_booking_limitations`, { method: "GET", credentials: "same-origin" })
-        .then((response) => {
-            if (!response.ok) throw new Error(`Error fetching booking limits: ${response.statusText}`);
-            return response.json();
-        })
+    fetchWithRetry(`/bookings/get_booking_limitations`, { method: "GET", credentials: "same-origin" })
+        .then((response) => response.json())
         .then((data) => {
             console.log("[DEBUG] Refreshed booking limits:", data);
 
@@ -461,6 +479,7 @@ function refreshBookingLimits(selectedDate) {
         })
         .catch((error) => {
             console.error("[ERROR] Error refreshing booking limits:", error);
+            alert("Error refreshing booking limits. Please try again later.");
         });
 }
 
@@ -509,7 +528,7 @@ function writeBookingToServer(slotId, selectedDate, userInfo, row, clickedCell, 
         // });
 
         // Send POST request to the server
-        fetch("/bookings/add", {
+        fetchWithRetry("/bookings/add", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
@@ -713,7 +732,7 @@ function refreshBookingsData(selectedDate) {
     const formattedDate = reformatDateToDdMmYyyy(selectedDate); // Format the date to dd/MM/yyyy
     console.log("Refreshing bookings for date:", formattedDate);
 
-    fetch(`/main/courts/bookings?date=${formattedDate}`)
+    fetchWithRetry(`/main/courts/bookings?date=${formattedDate}`)
         .then((response) => response.json())
         .then((data) => {
             if (!Array.isArray(data)) {
@@ -726,6 +745,7 @@ function refreshBookingsData(selectedDate) {
         })
         .catch((error) => {
             console.error("Error refreshing bookings:", error);
+            alert("Error refreshing bookings. Please try again later.");
         });
 }
 
