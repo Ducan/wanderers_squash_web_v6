@@ -42,12 +42,16 @@ function loadBookings(startDate, endDate, memNo) {
                 const bookingDateTime = new Date(`${booking.date.split("/").reverse().join("-")}T${booking.time}`);
                 const currentDateTime = new Date();
 
+                // Ensure `date_container` and `slot_id` are available
+                const dateContainer = booking.date_container || booking.date.split("/").reverse().join("-");
+                const slotId = booking.slot_id;
+
                 // Check if booking is in the past
                 const isPastBooking = bookingDateTime < currentDateTime;
-                
+
                 const cancelButton = isPastBooking
                     ? `<button class="cancel-btn" disabled style="cursor: not-allowed; opacity: 0.5;">Cannot Cancel</button>`
-                    : `<button class="cancel-btn" onclick="cancelBooking('${booking.time}', '${booking.date}', '${memNo}', '${booking.player_no_column}', '${booking.selected_court}')">Cancel</button>`;
+                    : `<button class="cancel-btn" onclick="cancelBooking('${dateContainer}', '${slotId}', '${booking.player_no_column}', '${booking.player_no}', '${booking.selected_court}')">Cancel</button>`;
 
                 const row = `
                     <tr>
@@ -68,22 +72,20 @@ function loadBookings(startDate, endDate, memNo) {
 
 /**
  * Cancel a booking for the logged-in user.
- * @param {string} startTime - The StartTime of the booking.
- * @param {string} date - The Date of the booking.
- * @param {number} memNo - The logged-in user's `mem_no`.
+ * @param {string} date_container - Booking date in ISO format (YYYY-MM-DD).
+ * @param {string|number} slot_id - Identifier for the selected time slot.
  * @param {string} playerNoColumn - The column representing the player number for the court.
+ * @param {number|string} memNo - The logged-in user's `mem_no`.
  * @param {number} selectedCourt - The court number.
  */
-function cancelBooking(startTime, date, memNo, playerNoColumn, selectedCourt) {
-    // Format the `start_time1`
-    const start_time1 = `${date} ${startTime}`;
-
+function cancelBooking(date_container, slot_id, playerNoColumn, memNo, selectedCourt) {
     // Prepare the payload
     const payload = {
-        start_time1: start_time1, // e.g., "26/01/2025 10:45:00"
-        player_no: memNo,        // Player number from session
+        date_container,
+        slot_id,
         player_no_column: playerNoColumn, // e.g., "PlayerNo_2"
-        selected_court: selectedCourt     // Court ID or number
+        player_no: Number(memNo),
+        selected_court: selectedCourt,
     };
 
     console.log("[DEBUG] Payload for cancellation:", payload); // Debug log
