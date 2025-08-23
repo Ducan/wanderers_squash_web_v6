@@ -75,6 +75,31 @@ function formatDate(date) {
     const year = date.toLocaleDateString("en-US", { year: "2-digit" });
     return `${weekday} ${day} ${month} '${year}`;
 }
+
+/**
+ * Fetch helper that retries requests with exponential backoff and a timeout.
+ * Aborts the request using AbortController when the timeout is reached.
+ */
+async function fetchWithRetry(url, options = {}, retries = 3, timeout = 5000) {
+    for (let attempt = 0; attempt <= retries; attempt++) {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), timeout);
+        try {
+            const response = await fetch(url, { ...options, signal: controller.signal });
+            clearTimeout(timer);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response;
+        } catch (error) {
+            clearTimeout(timer);
+            if (attempt === retries) throw error;
+            const delay = Math.pow(2, attempt) * 500;
+            await new Promise((res) => setTimeout(res, delay));
+        }
+    }
+}
+
 // Utility to get the selected date from dates_container
 function getSelectedDate() {
     const selectedDateBlock = document.querySelector(".date-block.selected");
@@ -441,12 +466,22 @@ function alignPeakPeriodColors() {
 /**
  * Refresh courts and periods data for the selected date.
  */
-function refreshCourtsData(selectedDate, force = false) {
+async function refreshCourtsData(selectedDate, force = false) {
     if (selectedDate === lastSelectedDate && !force) {
         console.log("Selected date has not changed. Skipping refresh...");
         return;
     }
     lastSelectedDate = selectedDate;
+
+    if (!navigator.onLine) {
+        console.warn("Offline. Waiting to retry when back online.");
+        window.addEventListener(
+            "online",
+            () => refreshCourtsData(selectedDate, true),
+            { once: true }
+        );
+        return;
+    }
 
     const formattedDate = reformatDateToDdMmYyyy(selectedDate); // Format the date to dd/MM/yyyy
     const tableBody = document.getElementById("time_slots_table_body");
@@ -455,32 +490,46 @@ function refreshCourtsData(selectedDate, force = false) {
         window.resetBookingsBinding();
     }
 
-    // Fetch time slots for the selected date
-    fetch(`${BASE_URL}/time_slots?date=${formattedDate}`)
-        .then((response) => response.json())
-        .then((data) => {
-            const timeSlots = data.time_slots || [];
-            timeSlots.forEach((slot) => {
-                const row = createRowWithPlaceholders(slot); // Create table rows for time slots
-                tableBody.appendChild(row);
-            });
-
-            // Fetch periods for the selected date after populating time slots
-            return fetch(`${BASE_URL}/periods_for_day?date=${formattedDate}`);
-        })
-        .then((response) => response.json())
-        .then((periods) => {
-            console.log("Periods Data Received:", periods); // Debugging line
-            populatePeriodsContainer(periods); // Populate the periods column in the table
-            alignPeakPeriodColors(); // Align colors for peak period time slots
-            refreshBookingsData(selectedDate); // Refresh bookings for the selected date
-            if (window.initializeBookings) {
-                window.initializeBookings();
-            }
-        })
-        .catch((error) => {
-            console.error("Error fetching courts data:", error);
+    try {
+        // Fetch time slots for the selected date
+        const timeSlotResp = await fetchWithRetry(`${BASE_URL}/time_slots?date=${formattedDate}`);
+        const data = await timeSlotResp.json();
+        const timeSlots = data.time_slots || [];
+        timeSlots.forEach((slot) => {
+            const row = createRowWithPlaceholders(slot); // Create table rows for time slots
+            tableBody.appendChild(row);
         });
+
+        // Fetch periods for the selected date after populating time slots
+        const periodsResp = await fetchWithRetry(`${BASE_URL}/periods_for_day?date=${formattedDate}`);
+        const periods = await periodsResp.json();
+        console.log("Periods Data Received:", periods); // Debugging line
+        populatePeriodsContainer(periods); // Populate the periods column in the table
+        alignPeakPeriodColors(); // Align colors for peak period time slots
+        refreshBookingsData(selectedDate); // Refresh bookings for the selected date
+        if (window.initializeBookings) {
+            window.initializeBookings();
+        }
+
+        if (tableBody.children.length === 0) {
+            if (!force) {
+                console.warn("No time slots received, retrying...");
+                refreshCourtsData(selectedDate, true);
+            } else if (navigator.onLine) {
+                if (confirm("Unable to load court data. Retry?")) {
+                    refreshCourtsData(selectedDate, true);
+                }
+            } else {
+                window.addEventListener(
+                    "online",
+                    () => refreshCourtsData(selectedDate, true),
+                    { once: true }
+                );
+            }
+        }
+    } catch (error) {
+        console.error("Error fetching courts data:", error);
+    }
 }
 
 /**
