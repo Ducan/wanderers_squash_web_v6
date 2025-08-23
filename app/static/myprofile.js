@@ -85,6 +85,7 @@
                     } else {
                         alert('Profile updated successfully.');
                         fetchSessionInfo();
+                        window.location.reload();
                     }
                 })
                 .catch(error => {
