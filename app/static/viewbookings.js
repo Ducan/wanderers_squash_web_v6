@@ -39,7 +39,8 @@ function loadBookings(startDate, endDate, memNo) {
             }
 
             data.bookings.forEach((booking) => {
-                const bookingDateTime = new Date(`${booking.date.split("/").reverse().join("-")}T${booking.time}`);
+                const time = booking.selected_time || booking.time;
+                const bookingDateTime = new Date(`${booking.date.split("/").reverse().join("-")}T${time}`);
                 const currentDateTime = new Date();
 
                 // Ensure `date_container` and `slot_id` are available
@@ -56,7 +57,7 @@ function loadBookings(startDate, endDate, memNo) {
                 const row = `
                     <tr>
                         <td>${booking.date}</td>
-                        <td>${booking.time}</td>
+                        <td>${time}</td>
                         <td>${booking.court_description || "Unknown"}</td>
                         <td>${cancelButton}</td>
                     </tr>

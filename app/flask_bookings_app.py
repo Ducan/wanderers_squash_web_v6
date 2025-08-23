@@ -777,6 +777,7 @@ def view_bookings():
                             "date": row.get("Date", "N/A"),
                             "date_container": date_container,
                             "selected_time": selected_time,
+                            "time": selected_time,
                             "slot_id": slot_id,
                             "status": "booked",
                             "action": "Cancel",
