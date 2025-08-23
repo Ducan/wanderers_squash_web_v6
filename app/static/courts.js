@@ -97,10 +97,6 @@ function populateDatesContainer(datesContainer, today) {
         const dateBlock = document.createElement("div");
         dateBlock.className = "date-block";
         dateBlock.textContent = formatDate(date);
-        // Store the date using Windhoek timezone in "dd/mm/yyyy" format
-        dateBlock.dataset.date = date.toLocaleDateString("en-GB", {
-            timeZone: "Africa/Windhoek",
-        });
 
         if (i === 0) {
             dateBlock.classList.add("selected");
