@@ -735,7 +735,29 @@ def view_bookings():
                         # Extract court details based on court index
                         court_no = court_index + 1  # Court number is 1-based
                         start_time = row.get("StartTime", "N/A")
-                        time_only = start_time.split(" ")[1] if " " in start_time else None
+                        time_only = start_time.split(" ")[1][:5] if " " in start_time else None
+
+                        # Derive date container and day of week
+                        try:
+                            date_obj = datetime.strptime(row["Date"], "%d/%m/%Y")
+                            date_container = date_obj.strftime("%Y-%m-%d")
+                        except (ValueError, TypeError):
+                            print(f"[DEBUG] Invalid date format for booking: {row}")
+                            continue
+
+                        py_day = date_obj.weekday()  # 0=Mon
+                        day_of_week = py_day + 2
+                        if day_of_week == 8:
+                            day_of_week = 1
+
+                        # Determine slot ID based on time slot position
+                        time_slots = get_time_slots(day_of_week)
+                        if time_only in time_slots:
+                            slot_id = time_slots.index(time_only) + 1
+                            selected_time = time_slots[slot_id - 1]
+                        else:
+                            print(f"[DEBUG] Time {time_only} not found in time slots for day {day_of_week}")
+                            continue
 
                         # Align court description if available
                         court_description = next(
@@ -753,13 +775,14 @@ def view_bookings():
                         # Add formatted booking
                         formatted_bookings.append({
                             "date": row.get("Date", "N/A"),
-                            "time": time_only,
+                            "date_container": date_container,
+                            "selected_time": selected_time,
+                            "slot_id": slot_id,
                             "status": "booked",
                             "action": "Cancel",
                             "court": court_no,
                             "court_description": court_description,
                             "player_no_column": player_no_column,
-                            "start_time1": start_time,
                             "player_no": mem_no,
                             "selected_court": court_no,
                         })
