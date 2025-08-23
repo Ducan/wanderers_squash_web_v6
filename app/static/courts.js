@@ -57,8 +57,11 @@ if (typeof BASE_URL === 'undefined') {
 
 // Format date to "dd/MM/yyyy"
 function reformatDateToDdMmYyyy(date) {
-    const [year, month, day] = date.split("-");
-    return `${day}/${month}/${year}`;
+    if (date.includes("-")) {
+        const [year, month, day] = date.split("-");
+        return `${day}/${month}/${year}`;
+    }
+    return date;
 }
 
 // Format time to "HH:MM" 24-hour format
@@ -94,7 +97,10 @@ function populateDatesContainer(datesContainer, today) {
         const dateBlock = document.createElement("div");
         dateBlock.className = "date-block";
         dateBlock.textContent = formatDate(date);
-        dateBlock.dataset.date = date.toISOString().split("T")[0];
+        // Store the date using Windhoek timezone in "dd/mm/yyyy" format
+        dateBlock.dataset.date = date.toLocaleDateString("en-GB", {
+            timeZone: "Africa/Windhoek",
+        });
 
         if (i === 0) {
             dateBlock.classList.add("selected");
