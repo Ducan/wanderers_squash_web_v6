@@ -94,7 +94,9 @@ function populateDatesContainer(datesContainer, today) {
         const dateBlock = document.createElement("div");
         dateBlock.className = "date-block";
         dateBlock.textContent = formatDate(date);
-        dateBlock.dataset.date = date.toISOString().split("T")[0];
+        // Store the date using local timezone to avoid UTC offset issues
+        // Use en-CA locale to ensure YYYY-MM-DD format
+        dateBlock.dataset.date = date.toLocaleDateString("en-CA");
 
         if (i === 0) {
             dateBlock.classList.add("selected");
