@@ -5,6 +5,10 @@ from app.dbconnection import (
     get_court_rates_per_minute,
     get_periods
 )
+import logging
+
+# Module level logger
+logger = logging.getLogger(__name__)
 
 # Define the blueprint
 financials_bp = Blueprint('financials', __name__, url_prefix='/financials')
@@ -54,7 +58,8 @@ def calculated_internet_bookings():
                 break
 
         if cost is None:
-            return jsonify({"error": f"Cost for {cost_type} not found."}), 404
+            logger.info(f"Cost for {cost_type} not found. Defaulting to 0.0")
+            cost = 0.0
         cost = float(cost)
 
         # Explicitly handle IBOOKING and ICANCEL for updated_credit
