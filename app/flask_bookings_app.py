@@ -604,7 +604,9 @@ def delete_booking():
             "financial_data": financial_result["financial_data"],
             "updated_credit": updated_credit
         }), 200
-
+    except Exception as e:
+        print(f"[ERROR] Exception in delete_booking: {e}")
+        return jsonify({"error": str(e)}), 500
     finally:
         try:
             # Log the audit information
