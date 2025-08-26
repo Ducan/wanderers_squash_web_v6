@@ -100,6 +100,23 @@ async function fetchWithRetry(url, options = {}, retries = 3, timeout = 5000) {
     }
 }
 
+// Display a non-blocking notification to the user
+function showNonBlockingNotification(message) {
+    const notification = document.createElement("div");
+    notification.textContent = message;
+    notification.style.position = "fixed";
+    notification.style.bottom = "10px";
+    notification.style.right = "10px";
+    notification.style.backgroundColor = "#f8d7da";
+    notification.style.color = "#721c24";
+    notification.style.padding = "10px";
+    notification.style.borderRadius = "5px";
+    notification.style.boxShadow = "0 0 5px rgba(0, 0, 0, 0.3)";
+    notification.style.zIndex = "1000";
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 5000);
+}
+
 // Utility to get the selected date from dates_container
 function getSelectedDate() {
     const selectedDateBlock = document.querySelector(".date-block.selected");
@@ -528,9 +545,8 @@ async function refreshCourtsData(selectedDate, force = false) {
                 console.warn("No time slots received, retrying...");
                 refreshCourtsData(selectedDate, true);
             } else if (navigator.onLine) {
-                if (confirm("Unable to load court data. Retry?")) {
-                    refreshCourtsData(selectedDate, true);
-                }
+                console.warn("Unable to load court data after retry.");
+                showNonBlockingNotification("Unable to load court data. Please refresh and try again.");
             } else {
                 window.addEventListener(
                     "online",
@@ -573,7 +589,7 @@ function initializeCourts() {
                 .then(() => {
                     populateDatesContainer(datesContainer, today); // Populate dates
                     refreshLegendsData(); // Refresh legends and update legend costs
-                    refreshCourtsData(currentSelectedDate, true); // Force data refresh on load
+                    refreshCourtsData(currentSelectedDate); // Initial load without forcing to allow retry logic
                 })
                 .catch((error) => {
                     console.error("Error fetching courts data during initialization:", error);
