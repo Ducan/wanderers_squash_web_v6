@@ -400,26 +400,25 @@ function deleteBookingFromServer(selectedDate, slotId, playerNo, row, clickedCel
         //    data: payload,
        // });
 
-        // Send POST request to delete booking on the server
-        fetchWithRetry("/bookings/delete", {
+        // Send POST request to delete booking on the server without automatic retries
+        fetch("/bookings/delete", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
         })
-            .then((response) => response.json())
-            .then((data) => {
+            .then(async (response) => {
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error || "Server error");
+                }
                 console.log("[DEBUG] Cancellation response:", data);
-                if (data.error) {
-                    console.error("[ERROR] Backend error:", data.error);
-                } else {
-                    updateLightsCredit(data.updated_credit);
-                    clickedCell.textContent = "Available";
-                    clickedCell.classList.remove("booked");
-                    clickedCell.classList.add("available");
-                    clickedCell.style.backgroundColor = "#FFFFFF"; // Reset to default color
-                    if (typeof onSuccess === "function") {
-                        onSuccess();
-                    }
+                updateLightsCredit(data.updated_credit);
+                clickedCell.textContent = "Available";
+                clickedCell.classList.remove("booked");
+                clickedCell.classList.add("available");
+                clickedCell.style.backgroundColor = "#FFFFFF"; // Reset to default color
+                if (typeof onSuccess === "function") {
+                    onSuccess();
                 }
             })
             .catch((error) => {
