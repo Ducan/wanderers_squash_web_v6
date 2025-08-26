@@ -742,20 +742,24 @@ def get_court_rates_per_minute():
             rows = cursor.fetchall()
 
             for row in rows:
-                rates = [row.RATEPMIN1, row.RATEPMIN2, row.RATEPMIN3, row.RATEPMIN4, row.RATEPMIN5]
-                bookings = [row.IBOOKING1, row.IBOOKING2, row.IBOOKING3, row.IBOOKING4, row.IBOOKING5]
-                cancellations = [row.ICANCEL1, row.ICANCEL2, row.ICANCEL3, row.ICANCEL4, row.ICANCEL5]
+                rates = [
+                    round(r, 4) if r is not None else None
+                    for r in [row.RATEPMIN1, row.RATEPMIN2, row.RATEPMIN3, row.RATEPMIN4, row.RATEPMIN5]
+                ]
+                bookings = [
+                    b if b is not None else None
+                    for b in [row.IBOOKING1, row.IBOOKING2, row.IBOOKING3, row.IBOOKING4, row.IBOOKING5]
+                ]
+                cancellations = [
+                    c if c is not None else None
+                    for c in [row.ICANCEL1, row.ICANCEL2, row.ICANCEL3, row.ICANCEL4, row.ICANCEL5]
+                ]
 
-                valid_rates = [round(r, 4) for r in rates if r not in (0, None)]
-                valid_bookings = [b for b in bookings if b not in (0, None)]
-                valid_cancellations = [c for c in cancellations if c not in (0, None)]
-
-                if valid_rates or valid_bookings or valid_cancellations:
-                    court_data[row.CourtDesc] = {
-                        "rates": valid_rates,
-                        "bookings": valid_bookings,
-                        "cancellations": valid_cancellations
-                    }
+                court_data[row.CourtDesc] = {
+                    "rates": rates,
+                    "bookings": bookings,
+                    "cancellations": cancellations,
+                }
             return court_data
     except pyodbc.Error as e:
         print("Error accessing the database:", e)
