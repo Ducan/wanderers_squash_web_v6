@@ -374,12 +374,23 @@ function deleteBookingFromServer(selectedDate, slotId, playerNo, row, clickedCel
             return;
         }
 
+        const periodId = parseInt(clickedCell.getAttribute("data-period-id"), 10);
+        if (isNaN(periodId)) {
+            showDebugPopup({
+                status: "error",
+                message: "Period ID not found for the selected booking.",
+                debug: { clickedCell },
+            });
+            return;
+        }
+
         const payload = {
             date_container: selectedDate,
             slot_id: slotId,
             player_no_column: `PlayerNo_${courtId}`,
             player_no: playerNo,
             selected_court: courtId,
+            period_id: periodId,
         };
 
         // Show the popup with additional debug information when booking was deleted

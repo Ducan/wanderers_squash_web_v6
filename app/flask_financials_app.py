@@ -19,6 +19,7 @@ def calculated_internet_bookings():
         # Unified input retrieval
         mem_no = request.args.get('mem_no') if request.method == 'GET' else request.json.get('mem_no')
         cost_type = request.args.get('cost_type') if request.method == 'GET' else request.json.get('cost_type')
+        period_id = request.args.get('period_id') if request.method == 'GET' else request.json.get('period_id')
 
         # Validate inputs
         if not mem_no or cost_type not in ['IBOOKING', 'ICANCEL']:
@@ -31,19 +32,30 @@ def calculated_internet_bookings():
 
         current_credit = float(member_profile['credit'])
 
-        # Fetch the cost based on cost_type
+        # Determine period index (0-based)
+        try:
+            period_index = int(period_id) - 1 if period_id else 0
+        except ValueError:
+            period_index = 0
+
+        # Fetch the cost based on cost_type and period
         court_data = get_court_rates_per_minute()
         cost = None
         for _, cost_data in court_data.items():
             if cost_type == 'IBOOKING':
-                cost = cost_data.get('bookings', [None])[0]
+                bookings = cost_data.get('bookings', [])
+                if period_index < len(bookings):
+                    cost = bookings[period_index]
             elif cost_type == 'ICANCEL':
-                cost = cost_data.get('cancellations', [None])[0]
+                cancellations = cost_data.get('cancellations', [])
+                if period_index < len(cancellations):
+                    cost = cancellations[period_index]
             if cost is not None:
                 break
 
         if cost is None:
             return jsonify({"error": f"Cost for {cost_type} not found."}), 404
+        cost = float(cost)
 
         # Explicitly handle IBOOKING and ICANCEL for updated_credit
         if cost_type == 'IBOOKING':

@@ -542,8 +542,9 @@ def delete_booking():
         player_no_column = data.get("player_no_column")  # e.g., "PlayerNo_1"
         player_no = data.get("player_no")  # Member number
         selected_court = data.get("selected_court")  # Court ID or number
+        period_id = data.get("period_id")  # Booking period identifier
 
-        if not (date_container and slot_id and player_no_column and player_no and selected_court):
+        if not (date_container and slot_id and player_no_column and player_no and selected_court and period_id):
             return jsonify({"error": "Missing booking details."}), 400
 
         try:
@@ -587,7 +588,7 @@ def delete_booking():
             print(f"[ERROR] Failed to process waiting list notifications: {e}")
 
         # Step 4: Call the financial update
-        financial_result = delete_booking_financials(player_no)
+        financial_result = delete_booking_financials(player_no, period_id)
         if financial_result["status"] == "error":
             return jsonify({
                 "message": "Booking deleted, but financial update failed.",
@@ -618,16 +619,20 @@ def delete_booking():
         except Exception as e:
             print(f"[ERROR] Audit log failed: {e}")
 
-def delete_booking_financials(player_no):
+def delete_booking_financials(player_no, period_id):
     """
     Perform the financial update for a successful cancellation.
     Updates the S_Credit in the database.
+
+    Args:
+        player_no (int): Member number of the player.
+        period_id (int): Booking period identifier to select the correct cancellation fee.
     """
     try:
         from flask import current_app, request
 
         # Construct the financial data payload
-        financial_payload = {"mem_no": player_no, "cost_type": "ICANCEL"}
+        financial_payload = {"mem_no": player_no, "cost_type": "ICANCEL", "period_id": period_id}
         print(f"[DEBUG] Financial payload for cancellation: {financial_payload}")  # Log payload for debugging
 
         # Construct the financial endpoint dynamically
